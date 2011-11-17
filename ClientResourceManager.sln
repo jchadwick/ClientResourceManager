@@ -7,24 +7,44 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientResourceManager.Mvc",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoWebsite.Mvc", "DemoWebsite.Mvc\DemoWebsite.Mvc.csproj", "{0E70801A-9ED2-46CD-A896-312829B91104}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoWebsite.WebForms", "DemoWebsite.WebForms\DemoWebsite.WebForms.csproj", "{50EBC47F-28F9-4ED1-AAEE-E69339A20AA8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D7612E18-8F2B-4C60-BEF5-022B9684A547}"
+	ProjectSection(SolutionItems) = preProject
+		README.markdown = README.markdown
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		.NET 3.5|Any CPU = .NET 3.5|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E4CA5769-EA06-4F67-AF34-953D181D3320}..NET 3.5|Any CPU.ActiveCfg = .NET 3.5|Any CPU
+		{E4CA5769-EA06-4F67-AF34-953D181D3320}..NET 3.5|Any CPU.Build.0 = .NET 3.5|Any CPU
 		{E4CA5769-EA06-4F67-AF34-953D181D3320}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E4CA5769-EA06-4F67-AF34-953D181D3320}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4CA5769-EA06-4F67-AF34-953D181D3320}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4CA5769-EA06-4F67-AF34-953D181D3320}.Release|Any CPU.Build.0 = Release|Any CPU
+		{670641AF-0413-48C2-8A0E-28D5A88CC6C3}..NET 3.5|Any CPU.ActiveCfg = .NET 3.5|Any CPU
+		{670641AF-0413-48C2-8A0E-28D5A88CC6C3}..NET 3.5|Any CPU.Build.0 = .NET 3.5|Any CPU
 		{670641AF-0413-48C2-8A0E-28D5A88CC6C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{670641AF-0413-48C2-8A0E-28D5A88CC6C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{670641AF-0413-48C2-8A0E-28D5A88CC6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{670641AF-0413-48C2-8A0E-28D5A88CC6C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E70801A-9ED2-46CD-A896-312829B91104}..NET 3.5|Any CPU.ActiveCfg = .NET 3.5|Any CPU
+		{0E70801A-9ED2-46CD-A896-312829B91104}..NET 3.5|Any CPU.Build.0 = .NET 3.5|Any CPU
 		{0E70801A-9ED2-46CD-A896-312829B91104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0E70801A-9ED2-46CD-A896-312829B91104}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E70801A-9ED2-46CD-A896-312829B91104}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E70801A-9ED2-46CD-A896-312829B91104}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50EBC47F-28F9-4ED1-AAEE-E69339A20AA8}..NET 3.5|Any CPU.ActiveCfg = .NET 3.5|Any CPU
+		{50EBC47F-28F9-4ED1-AAEE-E69339A20AA8}..NET 3.5|Any CPU.Build.0 = .NET 3.5|Any CPU
+		{50EBC47F-28F9-4ED1-AAEE-E69339A20AA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50EBC47F-28F9-4ED1-AAEE-E69339A20AA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50EBC47F-28F9-4ED1-AAEE-E69339A20AA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50EBC47F-28F9-4ED1-AAEE-E69339A20AA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

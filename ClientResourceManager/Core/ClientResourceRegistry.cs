@@ -9,7 +9,7 @@ namespace ClientResourceManager
     {
         public const string DictionaryKey = "ClientResourceRegistry.Resources";
 
-        private readonly ISet<ClientResource> _resources;
+        private readonly IList<ClientResource> _resources;
 
         public IEnumerable<ClientResource> Resources
         {
@@ -32,7 +32,7 @@ namespace ClientResourceManager
 
         public ClientResourceRegistry()
         {
-            _resources = new SortedSet<ClientResource>();
+            _resources = new List<ClientResource>();
         }
 
         public ClientResourceRegistry(IDictionary container)
@@ -40,19 +40,19 @@ namespace ClientResourceManager
             Contract.Requires(container != null);
 
             if (container[DictionaryKey] == null)
-                container[DictionaryKey] = new SortedSet<ClientResource>();
+                container[DictionaryKey] = new List<ClientResource>();
 
-            _resources = (ISet<ClientResource>)container[DictionaryKey];
+            _resources = (IList<ClientResource>)container[DictionaryKey];
         }
 
         public ClientResourceRegistry(IEnumerable<ClientResource> clientScripts)
         {
             Contract.Requires(clientScripts != null);
 
-            _resources = clientScripts as ISet<ClientResource>;
+            _resources = clientScripts as IList<ClientResource>;
 
             if(_resources == null)
-                _resources = new SortedSet<ClientResource>(clientScripts);
+                _resources = new List<ClientResource>(clientScripts);
         }
 
         public void Register(string uri, ClientResourceKind? kind = null, int? level = 0)
@@ -74,7 +74,7 @@ namespace ClientResourceManager
 
         public static ClientResourceKind GuessResourceKind(string uri)
         {
-            if (string.IsNullOrWhiteSpace(uri))
+            if (string.IsNullOrEmpty(uri))
                 return default(ClientResourceKind);
 
             if (uri.ToLowerInvariant().Contains(".js"))

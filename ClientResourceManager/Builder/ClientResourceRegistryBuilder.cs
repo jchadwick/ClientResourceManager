@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -10,12 +11,33 @@ namespace ClientResourceManager
     {
         private readonly ClientResourceRegistry _resourceRegistry;
 
+        public IEnumerable<ClientResource> Resources
+        {
+            get { return _resourceRegistry.Resources; }
+        }
+
+        public IEnumerable<ClientResource> Scripts
+        {
+            get { return _resourceRegistry.Scripts; }
+        }
+
+        public IEnumerable<ClientResource> Stylesheets
+        {
+            get { return _resourceRegistry.Stylesheets; }
+        }
+
+
         public ClientResourceRegistryBuilder(ClientResourceRegistry resourceRegistry)
         {
             _resourceRegistry = resourceRegistry;
         }
 
-        public ClientResourceRegistryBuilder Include(string uri, Level level = null)
+        public ClientResourceRegistryBuilder Include(string uri)
+        {
+            return Include(uri, null);
+        }
+
+        public ClientResourceRegistryBuilder Include(string uri, Level level)
         {
             var kind = ClientResourceRegistry.GuessResourceKind(uri);
 
@@ -25,7 +47,12 @@ namespace ClientResourceManager
             return this;
         }
 
-        public ClientResourceRegistryBuilder IncludeScript(string uri, Level level = null)
+        public ClientResourceRegistryBuilder IncludeScript(string uri)
+        {
+            return IncludeScript(uri, null);
+        }
+
+        public ClientResourceRegistryBuilder IncludeScript(string uri, Level level)
         {
             var resource = new ClientResource(uri) { Kind = ClientResourceKind.Script, Level = level };
             IncludeClientResource(resource);
@@ -33,7 +60,13 @@ namespace ClientResourceManager
             return this;
         }
 
-        public ClientResourceRegistryBuilder IncludeStylesheet(string uri, Level level = null)
+
+        public ClientResourceRegistryBuilder IncludeStylesheet(string uri)
+        {
+            return IncludeStylesheet(uri, null);
+        }
+
+        public ClientResourceRegistryBuilder IncludeStylesheet(string uri, Level level)
         {
             var resource = new ClientResource(uri) { Kind = ClientResourceKind.Stylesheet, Level = level };
             IncludeClientResource(resource);

@@ -39,8 +39,8 @@ namespace ClientResourceManager
 
         public ClientResource(string uri)
         {
+            Contract.Requires(!string.IsNullOrEmpty(uri));
             _uri = uri;
-            Contract.Requires(!string.IsNullOrWhiteSpace(uri));
         }
 
 

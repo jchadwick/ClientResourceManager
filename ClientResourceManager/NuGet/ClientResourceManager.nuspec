@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>ClientResourceManager</id>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
     <title>ASP.NET Client Resource Manager</title>
     <authors>Jess Chadwick</authors>
     <owners>Jess Chadwick</owners>

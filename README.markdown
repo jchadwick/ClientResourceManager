@@ -2,7 +2,7 @@
 
 ## Usage
 
-Register anywhere you have access to HttpContext or HttpContextBase:
+Register anywhere you have access to `HttpContext` or `HttpContextBase`:
 
 ```c#
 var resourceManager = HttpContext.Current.ClientResources();
