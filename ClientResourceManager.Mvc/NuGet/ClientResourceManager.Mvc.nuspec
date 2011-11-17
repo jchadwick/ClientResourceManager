@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>ClientResourceManager.Mvc</id>
+    <version>0.5.0</version>
+    <title>ASP.NET MVC Client Resource Manager</title>
+    <authors>Jess Chadwick</authors>
+    <owners>Jess Chadwick</owners>
+    <!--<licenseUrl>https://raw.github.com/jchadwick/ClientResourceManager/master/license.txt</licenseUrl>-->
+    <projectUrl>https://github.com/jchadwick/ClientResourceManager</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>ASP.NET MVC extensions for the ASP.NET Client Resource Manager</description>
+    <tags>aspnet mvc ScriptManager scripts stylesheets</tags>
+      <dependencies>
+          <dependency id="ClientResourceManager" version="0.5.0" />
+      </dependencies>
+  </metadata>
+</package>

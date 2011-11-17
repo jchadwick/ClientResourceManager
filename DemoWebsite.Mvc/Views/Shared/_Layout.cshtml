@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+
+    @(Html.ClientResources()
+            // Add each resource a couple times just to prove that
+            // duplicate urls get filtered out
+            .IncludeStylesheet("~/Content/Site.css", Level.Global)
+            .IncludeStylesheet("~/Content/Site.css", Level.Global)
+            .IncludeScript("~/Scripts/jquery-1.5.1.min.js")
+            .IncludeScript("~/Scripts/jquery-1.5.1.min.js")
+            .IncludeScript("~/Scripts/modernizr-1.7.min.js")
+            .IncludeScript("~/Scripts/modernizr-1.7.min.js")
+            
+            // Add it again, but this time let the manager figure out the type
+            .Include("~/Scripts/jquery.validate.js", Level.MidLevel)
+            
+            // Render the head (global) resources only
+            .RenderHead()
+    )
+</head>
+<body>
+    <div class="page">
+        <header>
+            <div id="title">
+                <h1>My MVC Application</h1>
+            </div>
+            <div id="logindisplay">
+                @Html.Partial("_LogOnPartial")
+            </div>
+            <nav>
+                <ul id="menu">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                </ul>
+            </nav>
+        </header>
+        <section id="main">
+            @RenderBody()
+        </section>
+        <footer>
+        </footer>
+    </div>
+
+    @* Now render the rest of the (non-Head) resources *@
+    @Html.ClientResources().Render()
+</body>
+</html>
