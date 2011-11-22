@@ -13,5 +13,13 @@ namespace ClientResourceManager
         {
             return new ClientResourceRegistryBuilder(new ClientResourceRegistry(context.Items));
         }
+
+        internal static bool IsAjax(this HttpContextBase context)
+        {
+            var request = context.Request;
+
+            return ((request["X-Requested-With"] == "XMLHttpRequest") || ((request.Headers != null) && (request.Headers["X-Requested-With"] == "XMLHttpRequest")));
+        }
+
     }
 }

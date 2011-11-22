@@ -92,7 +92,7 @@ namespace ClientResourceManager
             return Render(x => x.Level >= Level.Global);
         }
 
-        protected IHtmlString Render(Func<ClientResource, bool> filter = null)
+        protected internal IHtmlString Render(Func<ClientResource, bool> filter = null)
         {
             filter = filter ?? (x => true);
 
@@ -101,7 +101,7 @@ namespace ClientResourceManager
             var stylesheets = _resourceRegistry.Stylesheets.Where(filter);
             foreach (var stylesheet in stylesheets)
             {
-                var relativeUrl = VirtualPathUtility.ToAbsolute(stylesheet.Url);
+                var relativeUrl = ResolveUrlAttribute(stylesheet.Url);
                 buffer.AppendFormat("<link rel='stylesheet' type='text/stylesheet' href='{0}' />", relativeUrl);
                 buffer.AppendLine();
             }
@@ -109,12 +109,18 @@ namespace ClientResourceManager
             var scripts = _resourceRegistry.Scripts.Where(filter);
             foreach (var script in scripts)
             {
-                var relativeUrl = VirtualPathUtility.ToAbsolute(script.Url);
+                var relativeUrl = ResolveUrlAttribute(script.Url);
                 buffer.AppendFormat("<script type='text/javascript' src='{0}'></script>", relativeUrl);
                 buffer.AppendLine();
             }
 
             return new HtmlString(buffer.ToString());
+        }
+
+        private string ResolveUrlAttribute(string url)
+        {
+            var relativeUrl = VirtualPathUtility.ToAbsolute(url);
+            return HttpUtility.HtmlAttributeEncode(relativeUrl);
         }
 
         #region Hidden methods

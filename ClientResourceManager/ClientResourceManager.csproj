@@ -71,6 +71,8 @@
     <Compile Include="Core\ClientResourceRegistry.cs" />
     <Compile Include="Builder\ClientResourceRegistryBuilder.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
+    <Compile Include="Plumbing\ClientResourcesResponseFilter.cs" />
+    <Compile Include="Module\Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shims\CodeContracts.cs" />
     <Compile Include="Shims\IHtmlString.cs">
