@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Net;
+using System.Web;
 
 namespace ClientResourceManager
 {
@@ -14,6 +15,7 @@ namespace ClientResourceManager
             return new ClientResourceRegistryBuilder(new ClientResourceRegistry(context.Items));
         }
 
+
         internal static bool IsAjax(this HttpContextBase context)
         {
             var request = context.Request;
@@ -21,5 +23,9 @@ namespace ClientResourceManager
             return ((request["X-Requested-With"] == "XMLHttpRequest") || ((request.Headers != null) && (request.Headers["X-Requested-With"] == "XMLHttpRequest")));
         }
 
+        internal static void SetStatusCode(this HttpResponseBase response, HttpStatusCode statusCode)
+        {
+            response.StatusCode = (int)statusCode;
+        }
     }
 }

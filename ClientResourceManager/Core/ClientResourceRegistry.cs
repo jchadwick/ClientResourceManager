@@ -10,10 +10,23 @@ namespace ClientResourceManager
         public const string DictionaryKey = "ClientResourceRegistry.Resources";
 
         private readonly IList<ClientResource> _resources;
+        private readonly IList<string> _onDocumentReadyStatements = new List<string>();
+
+        public IEnumerable<string> OnDocumentReadyStatements
+        {
+            get { return _onDocumentReadyStatements; }
+        }
 
         public IEnumerable<ClientResource> Resources
         {
-            get { return _resources; }
+            get
+            {
+                return from resource in _resources
+                       orderby resource.Level descending, resource.Ordinal
+                       group resource by resource.Url into groups
+                       let maxLevel = groups.Max(x => x.Level)
+                       select groups.FirstOrDefault(x => x.Level == maxLevel);
+            }
         }
 
         public IEnumerable<ClientResource> Scripts
@@ -55,6 +68,7 @@ namespace ClientResourceManager
                 _resources = new List<ClientResource>(clientScripts);
         }
 
+
         public void Register(string uri, ClientResourceKind? kind = null, int? level = 0)
         {
             var resource = new ClientResource(uri) { Level = Level.Loose };
@@ -69,6 +83,11 @@ namespace ClientResourceManager
         {
             if(!_resources.Contains(resource))
                 _resources.Add(resource);
+        }
+
+        public void OnDocumentReady(string scriptBlock)
+        {
+            _onDocumentReadyStatements.Add(scriptBlock);
         }
 
 

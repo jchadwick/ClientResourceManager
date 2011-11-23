@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Web;
 
@@ -74,6 +75,41 @@ namespace ClientResourceManager
             return this;
         }
 
+        public ClientResourceRegistryBuilder IncludeEmbeddedResource<T>(string resourceName)
+        {
+            var kind = ClientResourceRegistry.GuessResourceKind(resourceName);
+            return IncludeEmbeddedResource<T>(resourceName, kind, null);
+        }
+
+        public ClientResourceRegistryBuilder IncludeEmbeddedResource<T>(string resourceName, ClientResourceKind kind)
+        {
+            return IncludeEmbeddedResource<T>(resourceName, kind, null);
+        }
+
+        public ClientResourceRegistryBuilder IncludeEmbeddedResource<T>(string resourceName, ClientResourceKind kind = ClientResourceKind.Script, Level level = null)
+        {
+            return IncludeEmbeddedResource(typeof (T).Assembly, resourceName, kind, level);
+        }
+
+        public ClientResourceRegistryBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName)
+        {
+            var kind = ClientResourceRegistry.GuessResourceKind(resourceName);
+            return IncludeEmbeddedResource(assembly, resourceName, kind, null);
+        }
+
+        public ClientResourceRegistryBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName, ClientResourceKind kind)
+        {
+            return IncludeEmbeddedResource(assembly, resourceName, kind, null);
+        }
+
+        public ClientResourceRegistryBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName, ClientResourceKind kind = ClientResourceKind.Script, Level level = null)
+        {
+            var resource = new EmbeddedClientResource(assembly, resourceName) {Level = level, Kind = kind};
+            _resourceRegistry.Register(resource);
+
+            return this;
+        }
+
         public ClientResourceRegistryBuilder IncludeClientResource(ClientResource resource)
         {
             _resourceRegistry.Register(resource);
@@ -81,6 +117,12 @@ namespace ClientResourceManager
             return this;
         }
 
+        public ClientResourceRegistryBuilder OnDocumentReady(string scriptBlock)
+        {
+            _resourceRegistry.OnDocumentReady(scriptBlock);
+
+            return this;
+        }
 
         public IHtmlString Render()
         {
@@ -98,7 +140,9 @@ namespace ClientResourceManager
 
             var buffer = new StringBuilder();
 
-            var stylesheets = _resourceRegistry.Stylesheets.Where(filter);
+            var resources = _resourceRegistry.Resources.Where(filter).ToArray();
+
+            var stylesheets = resources.Where(x => x.Kind == ClientResourceKind.Stylesheet);
             foreach (var stylesheet in stylesheets)
             {
                 var relativeUrl = ResolveUrlAttribute(stylesheet.Url);
@@ -106,7 +150,7 @@ namespace ClientResourceManager
                 buffer.AppendLine();
             }
 
-            var scripts = _resourceRegistry.Scripts.Where(filter);
+            var scripts = resources.Where(x => x.Kind == ClientResourceKind.Script);
             foreach (var script in scripts)
             {
                 var relativeUrl = ResolveUrlAttribute(script.Url);
@@ -119,8 +163,7 @@ namespace ClientResourceManager
 
         private string ResolveUrlAttribute(string url)
         {
-            var relativeUrl = VirtualPathUtility.ToAbsolute(url);
-            return HttpUtility.HtmlAttributeEncode(relativeUrl);
+            return VirtualPathUtility.ToAbsolute(url);
         }
 
         #region Hidden methods

@@ -4,17 +4,24 @@ namespace ClientResourceManager
 {
     public class Level : IComparable<Level>
     {
-        public static readonly Level Global = new Level(100);
-        public static readonly Level MidLevel = new Level(75);
-        public static readonly Level Component = new Level(50);
-        public static readonly Level Loose = new Level(0);
+        public static readonly Level Global = new Level(100, "Global");
+        public static readonly Level MidLevel = new Level(75, "MidLevel");
+        public static readonly Level Component = new Level(50, "Component");
+        public static readonly Level Loose = new Level(0, "Loose");
 
         public int Value { get; private set; }
 
+        public string Display { get; private set; }
 
-        public Level(int value)
+
+        public Level(int value) : this(value, null)
+        {
+        }
+
+        public Level(int value, string display)
         {
             Value = value;
+            Display = display ?? value.ToString();
         }
 
 
@@ -41,6 +48,11 @@ namespace ClientResourceManager
         public override int GetHashCode()
         {
             return Value;
+        }
+
+        public override string ToString()
+        {
+            return Display;
         }
 
         public static implicit operator int?(Level value)

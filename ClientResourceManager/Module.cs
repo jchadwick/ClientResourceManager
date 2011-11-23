@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Configuration;
 using System.Web;
+using ClientResourceManager.Configuration;
 using ClientResourceManager.Plumbing;
 
 namespace ClientResourceManager
@@ -12,6 +14,8 @@ namespace ClientResourceManager
 
         public void Init(HttpApplication context)
         {
+            Settings.Current = ConfigurationManager.GetSection("clientResourceManager") as Settings ?? new Settings();
+
             context.PostReleaseRequestState += OnPostReleaseRequestState;
         }
 
@@ -36,10 +40,15 @@ namespace ClientResourceManager
 
         private static void PostReleaseRequestState(HttpContextBase context)
         {
-            if (!context.IsAjax())
+            if (!context.IsAjax() && RequestIsNotWebResource(context))
                 context.Response.Filter = new ClientResourcesResponseFilter(context.Response.Filter, context);
 
             context.Trace.Write("ClientResourceManager", "Injected client resources into response");
+        }
+
+        private static bool RequestIsNotWebResource(HttpContextBase context)
+        {
+            return !context.Request.Url.ToString().Contains("WebResource.axd");
         }
     }
 }

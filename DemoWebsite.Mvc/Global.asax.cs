@@ -20,6 +20,7 @@ namespace DemoWebsite.Mvc
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.IgnoreRoute("{*resource}", new { resource = @".*WebResource.axd.*" });
 
             routes.MapRoute(
                 "Default", // Route name

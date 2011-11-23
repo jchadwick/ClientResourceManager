@@ -56,6 +56,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -65,14 +66,18 @@
     <Reference Condition="'$(TargetFrameworkVersion)' != 'v4.0'" Include="System.Web.Abstractions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Core\ClientResource.cs" />
     <Compile Include="Core\ClientResourceKind.cs" />
+    <Compile Include="Core\EmbeddedClientResource.cs" />
     <Compile Include="Core\Level.cs" />
     <Compile Include="Core\ClientResourceRegistry.cs" />
     <Compile Include="Builder\ClientResourceRegistryBuilder.cs" />
+    <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Plumbing\ClientResourcesResponseFilter.cs" />
-    <Compile Include="Module\Module.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shims\CodeContracts.cs" />
     <Compile Include="Shims\IHtmlString.cs">

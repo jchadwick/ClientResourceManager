@@ -8,7 +8,9 @@ namespace ClientResourceManager
     {
         private readonly string _uri;
 
-        public virtual string ContentType
+        public int Ordinal { get; set; }
+
+        public string ContentType
         {
             get
             {
@@ -21,9 +23,9 @@ namespace ClientResourceManager
         }
         private string _contentType;
 
-        public virtual ClientResourceKind Kind { get; set; }
+        public ClientResourceKind Kind { get; set; }
 
-        public virtual string Url
+        public string Url
         {
             get { return _url = _url ?? BuildUrl(); }
             protected set { _url = value; }
@@ -46,8 +48,11 @@ namespace ClientResourceManager
 
         public int CompareTo(ClientResource other)
         {
-            var value = (other == null) ? String.Empty : other.Url;
-            return StringComparer.OrdinalIgnoreCase.Compare(Url, value);
+            if (ReferenceEquals(other, null) || ReferenceEquals(other.Level, null)) return 1;
+
+            if (Level == null) return -1;
+
+            return Level.CompareTo(other.Level);
         }
 
         protected virtual string BuildUrl()

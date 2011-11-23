@@ -1,10 +1,15 @@
-﻿@{
+﻿@using DemoWebsite.Mvc.Content.EmbeddedResources
+@{
     ViewBag.Title = "Home Page";
     
     // This page really, really needs jQuery, so make sure it's added...
     // It's ok if it's already been added - it'll get filtered out!
     Html.ClientResources()
-        .IncludeScript("~/Scripts/jquery-1.5.1.min.js");
+        .IncludeScript("~/Scripts/jquery-1.5.1.min.js")
+        .IncludeScript(Url.GetWebResourceUrl<Registration>(Registration.JQueryValidation))
+        .IncludeScript(Url.GetWebResourceUrl<Registration>(Registration.EmbeddedScript));
 }
 
 <h2>Home Page!</h2>
+
+<a href="@(Url.GetWebResourceUrl<Registration>(Registration.JQueryValidation))">Validation</a>
