@@ -1,3 +1,1 @@
-$(function () {
-    alert('embedded.js loaded');
-})
+alert('EmbeddedScript.js loaded');

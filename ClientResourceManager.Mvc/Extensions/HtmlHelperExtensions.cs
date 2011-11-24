@@ -4,7 +4,7 @@ namespace ClientResourceManager.Mvc
 {
     public static class HtmlHelperExtensions
     {
-        public static ClientResourceRegistryBuilder ClientResources(this HtmlHelper helper)
+        public static ClientResourceManagerBuilder ClientResources(this HtmlHelper helper)
         {
             return helper.ViewContext.HttpContext.ClientResources();
         }

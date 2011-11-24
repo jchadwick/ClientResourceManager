@@ -20,6 +20,12 @@ namespace ClientResourceManager
             ResourceName = resourceName;
         }
 
+        public EmbeddedClientResource(Assembly assembly, string resourceName, ClientResourceKind kind)
+            : this(assembly, resourceName)
+        {
+            Kind = kind;
+        }
+
 
         protected override string BuildUrl()
         {

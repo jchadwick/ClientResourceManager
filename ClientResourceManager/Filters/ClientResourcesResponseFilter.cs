@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace ClientResourceManager.Plumbing
+namespace ClientResourceManager.Filters
 {
     internal class ClientResourcesResponseFilter : MemoryStream
     {
@@ -12,18 +12,18 @@ namespace ClientResourceManager.Plumbing
             get { return Context.Response.ContentEncoding; }
         }
 
-        internal HttpContextBase Context { get; set; }
-        
-        internal Stream OutputStream { get; set; }
-        
-        internal ClientResourceRegistryBuilder ResourceRegistry { get; set; }
+        protected internal HttpContextBase Context { get; private set; }
+
+        protected internal Stream OutputStream { get; private set; }
+
+        protected internal ClientResourceManagerBuilder ClientResources { get; private set; }
 
 
-        public ClientResourcesResponseFilter(Stream output, HttpContextBase context)
+        public ClientResourcesResponseFilter(Stream output, HttpContextBase context, ClientResourceManagerBuilder builder)
         {
             OutputStream = output;
             Context = context;
-            ResourceRegistry = context.ClientResources();
+            ClientResources = builder;
         }
 
 
@@ -33,12 +33,11 @@ namespace ClientResourceManager.Plumbing
             int newOffset = offset;
             int newCount = count;
 
-            if (ResourceRegistry != null && ResourceRegistry.Resources.Any())
+            if (ClientResources != null && ClientResources.Resources.Any())
             {
                 var builder = new StringBuilder(ContentEncoding.GetString(buffer));
 
-                InjectHeadResources(builder);
-                InjectBodyResources(builder);
+                ModifyRequest(builder);
 
                 newBuffer = ContentEncoding.GetBytes(builder.ToString());
                 newOffset = 0;
@@ -48,15 +47,21 @@ namespace ClientResourceManager.Plumbing
             OutputStream.Write(newBuffer, newOffset, newCount);
         }
 
+        protected virtual void ModifyRequest(StringBuilder requestContents)
+        {
+            InjectHeadResources(requestContents);
+            InjectBodyResources(requestContents);
+        }
+
         private void InjectHeadResources(StringBuilder buffer)
         {
-            var html = ResourceRegistry.RenderHead();
+            var html = ClientResources.RenderHead();
             buffer.Replace("</head>", html + "</head>");
         }
 
         private void InjectBodyResources(StringBuilder buffer)
         {
-            var html = ResourceRegistry.Render();
+            var html = ClientResources.Render();
             buffer.Replace("</body>", html + "</body>");
         }
     }

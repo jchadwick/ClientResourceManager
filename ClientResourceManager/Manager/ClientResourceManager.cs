@@ -6,12 +6,12 @@ using System.Linq;
 namespace ClientResourceManager
 {
     /// <summary>
-    /// The registry of client resources for an individual request
+    /// The Manager of client resources for an individual request
     /// </summary>
-    public class ClientResourceRegistry
+    public class ClientResourceManager
     {
-        public const string ResourcesDictionaryKey = "ClientResourceRegistry.Resources";
-        public const string DocumentReadyStatementsDictionaryKey = "ClientResourceRegistry.DocumentReadyStatements";
+        public const string ResourcesDictionaryKey = "ClientResourceManager.Resources";
+        public const string DocumentReadyStatementsDictionaryKey = "ClientResourceManager.DocumentReadyStatements";
 
         private readonly IList<ClientResource> _resources;
         private readonly IList<string> _onDocumentReadyStatements;
@@ -47,12 +47,12 @@ namespace ClientResourceManager
         }
 
 
-        public ClientResourceRegistry()
+        public ClientResourceManager()
         {
             _resources = new List<ClientResource>();
         }
 
-        public ClientResourceRegistry(IDictionary container)
+        public ClientResourceManager(IDictionary container)
         {
             Contract.Requires(container != null);
 
@@ -63,7 +63,7 @@ namespace ClientResourceManager
                 container[DocumentReadyStatementsDictionaryKey] as List<string> ?? new List<string>();
         }
 
-        public ClientResourceRegistry(IEnumerable<ClientResource> clientScripts, IEnumerable<string> statements)
+        public ClientResourceManager(IEnumerable<ClientResource> clientScripts, IEnumerable<string> statements)
         {
             Contract.Requires(clientScripts != null);
 
@@ -77,7 +77,7 @@ namespace ClientResourceManager
 
         public void Register(string key, ClientResourceKind? kind = null, Level level = null)
         {
-            var resource = new ClientResource(key) { Level = Level.Loose };
+            var resource = new ClientResource(key, kind) { Level = Level.Loose };
 
             Register(resource);
         }

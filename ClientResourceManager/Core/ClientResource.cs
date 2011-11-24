@@ -23,7 +23,15 @@ namespace ClientResourceManager
         }
         private string _contentType;
 
-        public ClientResourceKind Kind { get; set; }
+        public ClientResourceKind Kind
+        {
+            get
+            {
+                return (_kind = _kind.GetValueOrDefault(GuessResourceKind())).Value;
+            }
+            protected set { _kind = value; }
+        }
+        private ClientResourceKind? _kind;
 
         public string Url
         {
@@ -39,10 +47,15 @@ namespace ClientResourceManager
         {
         }
 
-        public ClientResource(string uri)
+        public ClientResource(string uri) : this(uri, null)
+        {
+        }
+
+        public ClientResource(string uri, ClientResourceKind? kind)
         {
             Contract.Requires(!string.IsNullOrEmpty(uri));
             _uri = uri;
+            _kind = kind;
         }
 
 
@@ -76,6 +89,19 @@ namespace ClientResourceManager
                 default:
                     return "text/html";
             }
+        }
+
+        protected virtual ClientResourceKind GuessResourceKind()
+        {
+            var url = (Url ?? string.Empty).ToLowerInvariant();
+
+            if (url.Contains(".js"))
+                return ClientResourceKind.Script;
+
+            if (url.Contains(".css"))
+                return ClientResourceKind.Stylesheet;
+
+            return ClientResourceKind.Content;
         }
     }
 }

@@ -5,18 +5,18 @@ namespace ClientResourceManager
 {
     public static class HttpContextExtensions
     {
-        public static ClientResourceRegistryBuilder ClientResources(this HttpContext context)
+        public static ClientResourceManagerBuilder ClientResources(this HttpContext context)
         {
-            return new ClientResourceRegistryBuilder(new ClientResourceRegistry(context.Items));
+            return new ClientResourceManagerBuilder(new ClientResourceManager(context.Items));
         }
 
-        public static ClientResourceRegistryBuilder ClientResources(this HttpContextBase context)
+        public static ClientResourceManagerBuilder ClientResources(this HttpContextBase context)
         {
-            return new ClientResourceRegistryBuilder(new ClientResourceRegistry(context.Items));
+            return new ClientResourceManagerBuilder(new ClientResourceManager(context.Items));
         }
 
 
-        internal static bool IsAjax(this HttpContextBase context)
+        internal static bool IsAjaxRequest(this HttpContextBase context)
         {
             var request = context.Request;
 
