@@ -5,12 +5,16 @@ using System.Linq;
 
 namespace ClientResourceManager
 {
+    /// <summary>
+    /// The registry of client resources for an individual request
+    /// </summary>
     public class ClientResourceRegistry
     {
-        public const string DictionaryKey = "ClientResourceRegistry.Resources";
+        public const string ResourcesDictionaryKey = "ClientResourceRegistry.Resources";
+        public const string DocumentReadyStatementsDictionaryKey = "ClientResourceRegistry.DocumentReadyStatements";
 
         private readonly IList<ClientResource> _resources;
-        private readonly IList<string> _onDocumentReadyStatements = new List<string>();
+        private readonly IList<string> _onDocumentReadyStatements;
 
         public IEnumerable<string> OnDocumentReadyStatements
         {
@@ -52,29 +56,28 @@ namespace ClientResourceManager
         {
             Contract.Requires(container != null);
 
-            if (container[DictionaryKey] == null)
-                container[DictionaryKey] = new List<ClientResource>();
+            container[ResourcesDictionaryKey] = _resources =
+                container[ResourcesDictionaryKey] as List<ClientResource> ?? new List<ClientResource>();
 
-            _resources = (IList<ClientResource>)container[DictionaryKey];
+            container[DocumentReadyStatementsDictionaryKey] = _onDocumentReadyStatements = 
+                container[DocumentReadyStatementsDictionaryKey] as List<string> ?? new List<string>();
         }
 
-        public ClientResourceRegistry(IEnumerable<ClientResource> clientScripts)
+        public ClientResourceRegistry(IEnumerable<ClientResource> clientScripts, IEnumerable<string> statements)
         {
             Contract.Requires(clientScripts != null);
 
-            _resources = clientScripts as IList<ClientResource>;
+            _resources = clientScripts as IList<ClientResource> 
+                ?? new List<ClientResource>(clientScripts ?? Enumerable.Empty<ClientResource>());
 
-            if(_resources == null)
-                _resources = new List<ClientResource>(clientScripts);
+            _onDocumentReadyStatements = statements as IList<string>
+                ?? new List<string>(statements ?? Enumerable.Empty<string>());
         }
 
 
-        public void Register(string uri, ClientResourceKind? kind = null, int? level = 0)
+        public void Register(string key, ClientResourceKind? kind = null, Level level = null)
         {
-            var resource = new ClientResource(uri) { Level = Level.Loose };
-
-            if (kind != null)
-                resource.Kind = GuessResourceKind(uri);
+            var resource = new ClientResource(key) { Level = Level.Loose };
 
             Register(resource);
         }
@@ -88,21 +91,6 @@ namespace ClientResourceManager
         public void OnDocumentReady(string scriptBlock)
         {
             _onDocumentReadyStatements.Add(scriptBlock);
-        }
-
-
-        public static ClientResourceKind GuessResourceKind(string uri)
-        {
-            if (string.IsNullOrEmpty(uri))
-                return default(ClientResourceKind);
-
-            if (uri.ToLowerInvariant().Contains(".js"))
-                return ClientResourceKind.Script;
-
-            if (uri.ToLowerInvariant().Contains(".css"))
-                return ClientResourceKind.Stylesheet;
-
-            return ClientResourceKind.Content;
         }
     }
 }

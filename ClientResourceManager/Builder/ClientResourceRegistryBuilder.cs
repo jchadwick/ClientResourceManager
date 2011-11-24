@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Web;
+using ClientResourceManager.Plumbing;
 
 namespace ClientResourceManager
 {
@@ -40,9 +42,7 @@ namespace ClientResourceManager
 
         public ClientResourceRegistryBuilder Include(string uri, Level level)
         {
-            var kind = ClientResourceRegistry.GuessResourceKind(uri);
-
-            var resource = new ClientResource(uri) { Kind = kind, Level = level };
+            var resource = new ClientResource(uri) { Level = level };
             IncludeClientResource(resource);
 
             return this;
@@ -55,7 +55,7 @@ namespace ClientResourceManager
 
         public ClientResourceRegistryBuilder IncludeScript(string uri, Level level)
         {
-            var resource = new ClientResource(uri) { Kind = ClientResourceKind.Script, Level = level };
+            var resource = new ClientResource(uri, ClientResourceKind.Script) { Level = level };
             IncludeClientResource(resource);
 
             return this;
@@ -69,7 +69,7 @@ namespace ClientResourceManager
 
         public ClientResourceRegistryBuilder IncludeStylesheet(string uri, Level level)
         {
-            var resource = new ClientResource(uri) { Kind = ClientResourceKind.Stylesheet, Level = level };
+            var resource = new ClientResource(uri, ClientResourceKind.Stylesheet) { Level = level };
             IncludeClientResource(resource);
 
             return this;
@@ -77,37 +77,32 @@ namespace ClientResourceManager
 
         public ClientResourceRegistryBuilder IncludeEmbeddedResource<T>(string resourceName)
         {
-            var kind = ClientResourceRegistry.GuessResourceKind(resourceName);
-            return IncludeEmbeddedResource<T>(resourceName, kind, null);
+            return IncludeEmbeddedResource(typeof(T).Assembly, resourceName);
         }
 
         public ClientResourceRegistryBuilder IncludeEmbeddedResource<T>(string resourceName, ClientResourceKind kind)
         {
-            return IncludeEmbeddedResource<T>(resourceName, kind, null);
+            return IncludeEmbeddedResource(typeof(T).Assembly, resourceName, kind);
         }
 
-        public ClientResourceRegistryBuilder IncludeEmbeddedResource<T>(string resourceName, ClientResourceKind kind = ClientResourceKind.Script, Level level = null)
+        public ClientResourceRegistryBuilder IncludeEmbeddedResource<T>(string resourceName, ClientResourceKind kind, Level level)
         {
             return IncludeEmbeddedResource(typeof (T).Assembly, resourceName, kind, level);
         }
 
         public ClientResourceRegistryBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName)
         {
-            var kind = ClientResourceRegistry.GuessResourceKind(resourceName);
-            return IncludeEmbeddedResource(assembly, resourceName, kind, null);
+            return IncludeClientResource(new EmbeddedClientResource(assembly, resourceName));
         }
 
         public ClientResourceRegistryBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName, ClientResourceKind kind)
         {
-            return IncludeEmbeddedResource(assembly, resourceName, kind, null);
+            return IncludeClientResource(new EmbeddedClientResource(assembly, resourceName, kind));
         }
 
-        public ClientResourceRegistryBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName, ClientResourceKind kind = ClientResourceKind.Script, Level level = null)
+        public ClientResourceRegistryBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName, ClientResourceKind kind, Level level)
         {
-            var resource = new EmbeddedClientResource(assembly, resourceName) {Level = level, Kind = kind};
-            _resourceRegistry.Register(resource);
-
-            return this;
+            return IncludeClientResource(new EmbeddedClientResource(assembly, resourceName, kind) {Level = level});
         }
 
         public ClientResourceRegistryBuilder IncludeClientResource(ClientResource resource)
@@ -126,19 +121,27 @@ namespace ClientResourceManager
 
         public IHtmlString Render()
         {
-            return Render(x => (x.Level ?? Level.Loose) < Level.Global);
+            using (var writer = new HtmlStringWriter())
+            {
+                Render(writer, x => (x.Level ?? Level.Loose) < Level.Global);
+                RenderScriptStatements(writer);
+
+                return writer;
+            }
         }
 
         public IHtmlString RenderHead()
         {
-            return Render(x => x.Level >= Level.Global);
+            using (var writer = new HtmlStringWriter())
+            {
+                Render(writer, x => x.Level >= Level.Global);
+                return writer;
+            }
         }
 
-        protected internal IHtmlString Render(Func<ClientResource, bool> filter = null)
+        protected internal void Render(TextWriter writer, Func<ClientResource, bool> filter = null)
         {
             filter = filter ?? (x => true);
-
-            var buffer = new StringBuilder();
 
             var resources = _resourceRegistry.Resources.Where(filter).ToArray();
 
@@ -146,19 +149,31 @@ namespace ClientResourceManager
             foreach (var stylesheet in stylesheets)
             {
                 var relativeUrl = ResolveUrlAttribute(stylesheet.Url);
-                buffer.AppendFormat("<link rel='stylesheet' type='text/stylesheet' href='{0}' />", relativeUrl);
-                buffer.AppendLine();
+                writer.WriteLine("<link rel='stylesheet' type='text/stylesheet' href='{0}' />", relativeUrl);
             }
 
             var scripts = resources.Where(x => x.Kind == ClientResourceKind.Script);
             foreach (var script in scripts)
             {
                 var relativeUrl = ResolveUrlAttribute(script.Url);
-                buffer.AppendFormat("<script type='text/javascript' src='{0}'></script>", relativeUrl);
-                buffer.AppendLine();
+                writer.WriteLine("<script type='text/javascript' src='{0}'></script>", relativeUrl);
             }
+        }
 
-            return new HtmlString(buffer.ToString());
+        protected virtual void RenderScriptStatements(TextWriter writer)
+        {
+            writer.WriteLine("<script type='text/javascript'>//<![CDATA[");
+            writer.WriteLine("window.onload = function() {");
+            foreach (var statement in _resourceRegistry.OnDocumentReadyStatements)
+            {
+                writer.Write(statement);
+
+                if (!statement.EndsWith(";"))
+                    writer.Write(";");
+            }
+            writer.WriteLine("\r\n};");
+            writer.WriteLine("//]]>");
+            writer.WriteLine("</script>");
         }
 
         private string ResolveUrlAttribute(string url)

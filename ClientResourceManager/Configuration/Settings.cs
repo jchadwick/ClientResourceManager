@@ -27,6 +27,30 @@ namespace ClientResourceManager.Configuration
             set { this["showWebResourceName"] = value; }
         }
 
+        [ConfigurationProperty("debug", DefaultValue = "false", IsRequired = false)]
+        public bool Debug
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(this["debug"].ToString(), out result);
+                return result;
+            }
+            set { this["debug"] = value; }
+        }
+
+        [ConfigurationProperty("wrapStatementsInTryCatch", DefaultValue = "true", IsRequired = false)]
+        public bool WrapStatementsInTryCatch
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(this["wrapStatementsInTryCatch"].ToString(), out result);
+                return result;
+            }
+            set { this["wrapStatementsInTryCatch"] = value; }
+        }
+
         [ConfigurationProperty("handlerUrl", DefaultValue = "~/ClientResources.axd", IsRequired = false)]
         public string HandlerUrl
         {
