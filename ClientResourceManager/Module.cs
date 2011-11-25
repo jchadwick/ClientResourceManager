@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Web;
+using System.Web.Routing;
 using ClientResourceManager.Configuration;
 using ClientResourceManager.Filters;
 
@@ -8,14 +9,20 @@ namespace ClientResourceManager
 {
     public class Module : IHttpModule
     {
+        static Module()
+        {
+            Settings.Current = ConfigurationManager.GetSection("clientResourceManager") as Settings ?? new Settings();
+
+            if (Settings.Current.HandlerMode == HandlerMode.Route)
+                RouteTable.Routes.Insert(0, new Route(Settings.Current.HandlerUrl, new ClientResourceRouteHandler()));
+        }
+
         public void Dispose()
         {
         }
 
         public void Init(HttpApplication context)
         {
-            Settings.Current = ConfigurationManager.GetSection("clientResourceManager") as Settings ?? new Settings();
-
             context.PostReleaseRequestState += OnPostReleaseRequestState;
         }
 

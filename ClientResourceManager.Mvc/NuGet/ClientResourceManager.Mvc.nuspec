@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>ClientResourceManager.Mvc</id>
-    <version>0.5.1</version>
+    <version>0.6.0</version>
     <title>ASP.NET MVC Client Resource Manager</title>
     <authors>Jess Chadwick</authors>
     <owners>Jess Chadwick</owners>
@@ -12,7 +12,7 @@
     <description>ASP.NET MVC extensions for the ASP.NET Client Resource Manager</description>
     <tags>aspnet mvc ScriptManager scripts stylesheets</tags>
       <dependencies>
-          <dependency id="ClientResourceManager" version="0.5.1" />
+          <dependency id="ClientResourceManager" version="0.6.0" />
       </dependencies>
   </metadata>
 </package>

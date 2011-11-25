@@ -1,9 +1,16 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Reflection;
-using System.Web;
 
 namespace ClientResourceManager.Configuration
 {
+    public enum HandlerMode
+    {
+        Disabled = 0,
+        HttpHandler,
+        Route
+    }
+
     public class Settings : ConfigurationSection
     {
         public static readonly string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString(2);
@@ -15,51 +22,73 @@ namespace ClientResourceManager.Configuration
         }
         private static Settings _current;
 
-        [ConfigurationProperty("showWebResourceName", DefaultValue = "false", IsRequired = false)]
+        private const string ShowWebResourceNameKey = "showWebResourceName";
+        [ConfigurationProperty(ShowWebResourceNameKey, DefaultValue = "true", IsRequired = false)]
         public bool ShowWebResourceName
         {
             get
             {
                 bool result;
-                bool.TryParse(this["showWebResourceName"].ToString(), out result);
+                bool.TryParse(this[ShowWebResourceNameKey].ToString(), out result);
                 return result;
             }
-            set { this["showWebResourceName"] = value; }
+            set { this[ShowWebResourceNameKey] = value; }
         }
 
-        [ConfigurationProperty("debug", DefaultValue = "false", IsRequired = false)]
-        public bool Debug
+        private const string MinificationKey = "minification";
+        [ConfigurationProperty(MinificationKey, DefaultValue = "false", IsRequired = false)]
+        public bool Minification
         {
             get
             {
                 bool result;
-                bool.TryParse(this["debug"].ToString(), out result);
+                bool.TryParse(this[MinificationKey].ToString(), out result);
                 return result;
             }
-            set { this["debug"] = value; }
+            set { this[MinificationKey] = value; }
         }
 
-        [ConfigurationProperty("wrapStatementsInTryCatch", DefaultValue = "true", IsRequired = false)]
-        public bool WrapStatementsInTryCatch
+        private const string StreamCopyBufferSizeKey = "streamCopyBufferSize";
+        [ConfigurationProperty(StreamCopyBufferSizeKey, DefaultValue = "4096", IsRequired = false)]
+        public int StreamCopyBufferSize
         {
             get
             {
-                bool result;
-                bool.TryParse(this["wrapStatementsInTryCatch"].ToString(), out result);
+                int result;
+                int.TryParse(this[StreamCopyBufferSizeKey].ToString(), out result);
                 return result;
             }
-            set { this["wrapStatementsInTryCatch"] = value; }
+            set { this[StreamCopyBufferSizeKey] = value; }
         }
 
-        [ConfigurationProperty("handlerUrl", DefaultValue = "~/ClientResources.axd", IsRequired = false)]
+
+        private const string HandlerModeKey = "handlerMode";
+        [ConfigurationProperty(HandlerModeKey, DefaultValue = "Route", IsRequired = false)]
+        public HandlerMode HandlerMode
+        {
+            get
+            {
+                HandlerMode mode;
+                Enum.TryParse(this[HandlerModeKey].ToString(), true, out mode);
+
+                if(mode != HandlerMode.Disabled && HandlerUrl.IsNullOrWhiteSpace())
+                    throw new ConfigurationErrorsException(string.Format("'{0}' is enabled, but '{1}' setting is empty", HandlerModeKey, HandlerUrlKey));
+
+                return mode;
+            }
+            set { this[HandlerModeKey] = value; }
+        }
+
+        private const string HandlerUrlKey = "handlerUrl";
+        [ConfigurationProperty(HandlerUrlKey, DefaultValue = "ClientResources/{*resourceId}", IsRequired = false)]
         public string HandlerUrl
         {
             get
             {
-                var url = this["handlerUrl"].ToString();
-                return VirtualPathUtility.ToAbsolute(url);
+                var url = this[HandlerUrlKey].ToString();
+                return url;
             }
-            set { this["handlerUrl"] = value; }
+            set { this[HandlerUrlKey] = value; }
         }
     }
 }

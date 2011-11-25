@@ -6,7 +6,7 @@
     // It's ok if it's already been added - it'll get filtered out!
     Html.ClientResources()
         .IncludeScript("~/Scripts/jquery-1.5.1.min.js")
-        .IncludeScript(Url.GetWebResourceUrl<Registration>(Registration.EmbeddedScript))
+        .IncludeEmbeddedResource<Registration>(Registration.EmbeddedScript)
         .OnDocumentReady("alert('Page loaded!')");
 }
 

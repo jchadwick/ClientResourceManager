@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web;
-using ClientResourceManager.Plumbing;
+using ClientResourceManager.Configuration;
+using ClientResourceManager.Util;
 
 namespace ClientResourceManager
 {
-    public class ClientResourceManagerBuilder
+    public class ClientResourceManagerBuilder : IFluentInterface
     {
         private readonly ClientResourceManager _resourceManager;
 
@@ -34,12 +34,7 @@ namespace ClientResourceManager
             _resourceManager = resourceManager;
         }
 
-        public ClientResourceManagerBuilder Include(string uri)
-        {
-            return Include(uri, null);
-        }
-
-        public ClientResourceManagerBuilder Include(string uri, Level level)
+        public ClientResourceManagerBuilder Include(string uri, Level level = null)
         {
             var resource = new ClientResource(uri) { Level = level };
             IncludeClientResource(resource);
@@ -47,12 +42,7 @@ namespace ClientResourceManager
             return this;
         }
 
-        public ClientResourceManagerBuilder IncludeScript(string uri)
-        {
-            return IncludeScript(uri, null);
-        }
-
-        public ClientResourceManagerBuilder IncludeScript(string uri, Level level)
+        public ClientResourceManagerBuilder IncludeScript(string uri, Level level = null)
         {
             var resource = new ClientResource(uri, ClientResourceKind.Script) { Level = level };
             IncludeClientResource(resource);
@@ -61,12 +51,7 @@ namespace ClientResourceManager
         }
 
 
-        public ClientResourceManagerBuilder IncludeStylesheet(string uri)
-        {
-            return IncludeStylesheet(uri, null);
-        }
-
-        public ClientResourceManagerBuilder IncludeStylesheet(string uri, Level level)
+        public ClientResourceManagerBuilder IncludeStylesheet(string uri, Level level = null)
         {
             var resource = new ClientResource(uri, ClientResourceKind.Stylesheet) { Level = level };
             IncludeClientResource(resource);
@@ -74,35 +59,17 @@ namespace ClientResourceManager
             return this;
         }
 
-        public ClientResourceManagerBuilder IncludeEmbeddedResource<T>(string resourceName)
-        {
-            return IncludeEmbeddedResource(typeof(T).Assembly, resourceName);
-        }
 
-        public ClientResourceManagerBuilder IncludeEmbeddedResource<T>(string resourceName, ClientResourceKind kind)
-        {
-            return IncludeEmbeddedResource(typeof(T).Assembly, resourceName, kind);
-        }
-
-        public ClientResourceManagerBuilder IncludeEmbeddedResource<T>(string resourceName, ClientResourceKind kind, Level level)
+        public ClientResourceManagerBuilder IncludeEmbeddedResource<T>(string resourceName, ClientResourceKind?  kind = null, Level level = null)
         {
             return IncludeEmbeddedResource(typeof (T).Assembly, resourceName, kind, level);
         }
 
-        public ClientResourceManagerBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName)
+        public ClientResourceManagerBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName, ClientResourceKind? kind = null, Level level = null)
         {
-            return IncludeClientResource(new EmbeddedClientResource(assembly, resourceName));
+            return IncludeClientResource(new EmbeddedClientResource(assembly, resourceName, kind) { Level = level });
         }
 
-        public ClientResourceManagerBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName, ClientResourceKind kind)
-        {
-            return IncludeClientResource(new EmbeddedClientResource(assembly, resourceName, kind));
-        }
-
-        public ClientResourceManagerBuilder IncludeEmbeddedResource(Assembly assembly, string resourceName, ClientResourceKind kind, Level level)
-        {
-            return IncludeClientResource(new EmbeddedClientResource(assembly, resourceName, kind) {Level = level});
-        }
 
         public ClientResourceManagerBuilder IncludeClientResource(ClientResource resource)
         {
@@ -110,6 +77,7 @@ namespace ClientResourceManager
 
             return this;
         }
+
 
         public ClientResourceManagerBuilder OnDocumentReady(string scriptBlock)
         {
@@ -147,16 +115,29 @@ namespace ClientResourceManager
             var stylesheets = resources.Where(x => x.Kind == ClientResourceKind.Stylesheet);
             foreach (var stylesheet in stylesheets)
             {
-                var relativeUrl = VirtualPathUtility.ToAbsolute(stylesheet.Url);
-                writer.WriteLine("<link rel='stylesheet' type='text/stylesheet' href='{0}' />", relativeUrl);
+                var relativeUrl = GetUrl(stylesheet);
+                writer.WriteLine("<link rel='stylesheet' type='text/css' href='{0}' />", relativeUrl);
             }
 
             var scripts = resources.Where(x => x.Kind == ClientResourceKind.Script);
             foreach (var script in scripts)
             {
-                var relativeUrl = VirtualPathUtility.ToAbsolute(script.Url);
+                var relativeUrl = GetUrl(script);
                 writer.WriteLine("<script type='text/javascript' src='{0}'></script>", relativeUrl);
             }
+        }
+
+        private static string GetUrl(ClientResource resource)
+        {
+            var url = resource.Url;
+
+            if (Settings.Current.HandlerMode != HandlerMode.Disabled)
+            {
+                url = Handler.GenerateUrl(resource);
+            }
+
+            var relativeUrl = VirtualPathUtility.ToAbsolute(url);
+            return relativeUrl;
         }
 
         protected internal virtual void RenderScriptStatements(TextWriter writer)
@@ -174,27 +155,5 @@ namespace ClientResourceManager
             writer.WriteLine("//]]>");
             writer.WriteLine("</script>");
         }
-
-        #region Hidden methods
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override string ToString()
-        {
-            return base.ToString();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Web;
 
 namespace ClientResourceManager
@@ -16,16 +17,49 @@ namespace ClientResourceManager
         }
 
 
-        internal static bool IsAjaxRequest(this HttpContextBase context)
+        public static bool IsAjaxRequest(this HttpContextBase context)
         {
             var request = context.Request;
 
-            return ((request["X-Requested-With"] == "XMLHttpRequest") || ((request.Headers != null) && (request.Headers["X-Requested-With"] == "XMLHttpRequest")));
+            return (request["X-Requested-With"] == "XMLHttpRequest") 
+                || ((request.Headers != null) && (request.Headers["X-Requested-With"] == "XMLHttpRequest"));
         }
 
-        internal static void SetStatusCode(this HttpResponseBase response, HttpStatusCode statusCode)
+        public static bool HasBeenModifiedSince(this HttpContextBase context, DateTime? lastModifiedDate)
         {
-            response.StatusCode = (int)statusCode;
+            var header = context.Request.Headers["If-Modified-Since"];
+
+            DateTime tempDate;
+            if (header != null && lastModifiedDate != null && DateTime.TryParse(header, out tempDate))
+            {
+                // Don't compare milliseconds because they often produce false results
+                var modifiedSinceUtc = NormalizeToSeconds(tempDate.ToUniversalTime());
+                var lastModifiedUtc = NormalizeToSeconds(lastModifiedDate.Value.ToUniversalTime());
+
+                return lastModifiedUtc > modifiedSinceUtc;
+            }
+
+            return true;
+        }
+
+        private static DateTime NormalizeToSeconds(DateTime source)
+        {
+            return new DateTime(source.Year, source.Month, source.Day,
+                                source.Hour, source.Minute, source.Second,
+                                source.Kind);
+        }
+
+        public static void SetStatusCode(this HttpContextBase context, HttpStatusCode statusCode)
+        {
+            SetStatusCode(context, statusCode, null);
+        }
+
+        public static void SetStatusCode(this HttpContextBase context, HttpStatusCode statusCode, string message)
+        {
+            context.Response.StatusCode = (int)statusCode;
+
+            if (message.HasValue())
+                context.Response.StatusDescription = message;
         }
     }
 }

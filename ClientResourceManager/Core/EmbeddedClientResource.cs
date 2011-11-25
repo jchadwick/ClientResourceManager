@@ -10,6 +10,10 @@ namespace ClientResourceManager
 
         public string ResourceName { get; private set; }
 
+        public override string Key
+        {
+            get { return ResourceName; }
+        }
 
         public EmbeddedClientResource(Assembly assembly, string resourceName)
         {
@@ -20,10 +24,11 @@ namespace ClientResourceManager
             ResourceName = resourceName;
         }
 
-        public EmbeddedClientResource(Assembly assembly, string resourceName, ClientResourceKind kind)
+        public EmbeddedClientResource(Assembly assembly, string resourceName, ClientResourceKind? kind)
             : this(assembly, resourceName)
         {
-            Kind = kind;
+            if(kind != null)
+                Kind = kind.Value;
         }
 
 
@@ -31,6 +36,11 @@ namespace ClientResourceManager
         {
             var url = Assembly.GetWebResourceUrl(ResourceName);
             return VirtualPathUtility.ToAbsolute(url);
+        }
+
+        protected override ClientResourceKind GuessResourceKind()
+        {
+            return GuessResourceKind(ResourceName);
         }
     }
 }

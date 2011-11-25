@@ -1,14 +1,13 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Web;
+using ClientResourceManager.Util;
 
 namespace ClientResourceManager
 {
     public class ClientResource : IComparable<ClientResource>
     {
         private readonly string _uri;
-
-        public int Ordinal { get; set; }
 
         public string ContentType
         {
@@ -33,14 +32,28 @@ namespace ClientResourceManager
         }
         private ClientResourceKind? _kind;
 
+        public virtual string Key
+        {
+            get
+            {
+                if(_key == null)
+                    _key = (Url.IsLocalUrl()) ? VirtualPathUtility.ToAppRelative(Url) : Url;
+
+                return _key;
+            }
+        }
+        private string _key;
+
+        public Level Level { get; set; }
+
+        public int Ordinal { get; set; }
+
         public string Url
         {
             get { return _url = _url ?? BuildUrl(); }
             protected set { _url = value; }
         }
         private string _url;
-
-        public Level Level { get; set; }
 
 
         protected ClientResource()
@@ -81,24 +94,29 @@ namespace ClientResourceManager
             switch (kind)
             {
                 case(ClientResourceKind.Script):
-                    return "text/javascript";
+                    return KnownMimeTypes.Javascript;
 
                 case(ClientResourceKind.Stylesheet):
-                    return "text/stylesheet";
+                    return KnownMimeTypes.Stylesheet;
 
                 default:
-                    return "text/html";
+                    return KnownMimeTypes.Html;
             }
         }
 
         protected virtual ClientResourceKind GuessResourceKind()
         {
-            var url = (Url ?? string.Empty).ToLowerInvariant();
+            return GuessResourceKind(Url);
+        }
 
-            if (url.Contains(".js"))
+        protected virtual ClientResourceKind GuessResourceKind(string filename)
+        {
+            var lowerFilename = (filename ?? string.Empty).ToLowerInvariant();
+
+            if (lowerFilename.Contains(".js"))
                 return ClientResourceKind.Script;
 
-            if (url.Contains(".css"))
+            if (lowerFilename.Contains(".css"))
                 return ClientResourceKind.Stylesheet;
 
             return ClientResourceKind.Content;

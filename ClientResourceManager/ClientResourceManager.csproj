@@ -19,7 +19,8 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">DOTNET4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -55,6 +56,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AjaxMin">
+      <HintPath>..\packages\AjaxMin.4.37.4345.34101\lib\net20\AjaxMin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -63,14 +67,26 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Condition="'$(TargetFrameworkVersion)' != 'v4.0'" Include="System.Web.Abstractions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppStart.cs" />
     <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Content\AggregateClientResourceContent.cs" />
+    <Compile Include="Content\ClientResourceLoader.cs" />
+    <Compile Include="Content\ClientResourceStream.cs" />
+    <Compile Include="Content\EmbeddedResourceStream.cs" />
+    <Compile Include="Content\LocalFileStream.cs" />
+    <Compile Include="Content\Processors\Minifier.cs" />
     <Compile Include="Core\ClientResource.cs" />
     <Compile Include="Core\ClientResourceKind.cs" />
+    <Compile Include="Core\ClientResourceRepository.cs" />
+    <Compile Include="Core\ClientResourceRepositoryFactory.cs" />
     <Compile Include="Core\EmbeddedClientResource.cs" />
+    <Compile Include="Core\IClientResourceRepository.cs" />
     <Compile Include="Core\Level.cs" />
+    <Compile Include="Handler.cs" />
+    <Compile Include="Content\ClientResourceContent.cs" />
+    <Compile Include="Content\IClientResourceLoader.cs" />
     <Compile Include="Manager\ClientResourceManager.cs" />
     <Compile Include="Manager\ClientResourceManagerBuilder.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
@@ -79,21 +95,22 @@
     <Compile Include="Filters\ClientResourcesAjaxResponseFilter.cs" />
     <Compile Include="Filters\ClientResourcesResponseFilter.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Plumbing\HtmlStringWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shims\CodeContracts.cs" />
-    <Compile Include="Shims\IHtmlString.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Util\HtmlStringWriter.cs" />
+    <Compile Include="Util\HttpServerFileSystem.cs" />
+    <Compile Include="Util\IFileSystem.cs" />
+    <Compile Include="Util\IFluentInterface.cs" />
+    <Compile Include="Util\KnownMimeTypes.cs" />
+    <Compile Include="Util\ServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NuGet\ClientResourceManager.nuspec">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="NuGet\content\" />
-    <Folder Include="NuGet\lib\net35\" />
     <Folder Include="NuGet\lib\net40\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

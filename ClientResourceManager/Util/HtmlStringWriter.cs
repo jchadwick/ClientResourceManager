@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Web;
 
-namespace ClientResourceManager.Plumbing
+namespace ClientResourceManager.Util
 {
     public class HtmlStringWriter : StringWriter, IHtmlString
     {
