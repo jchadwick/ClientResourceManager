@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Web;
-using System.Web.Routing;
 using ClientResourceManager.Configuration;
 using ClientResourceManager.Filters;
 
@@ -12,9 +11,6 @@ namespace ClientResourceManager
         static Module()
         {
             Settings.Current = ConfigurationManager.GetSection("clientResourceManager") as Settings ?? new Settings();
-
-            if (Settings.Current.HandlerMode == HandlerMode.Route)
-                RouteTable.Routes.Insert(0, new Route(Settings.Current.HandlerUrl, new ClientResourceRouteHandler()));
         }
 
         public void Dispose()
@@ -53,7 +49,10 @@ namespace ClientResourceManager
             var builder = context.ClientResources();
 
             if(context.IsAjaxRequest())
-                context.Response.Filter = new ClientResourcesAjaxResponseFilter(context.Response.Filter, context, builder);
+            {
+                if(context.IsPartialRenderingRequest())
+                    context.Response.Filter = new ClientResourcesPartialViewResponseFilter(context.Response.Filter, context, builder);
+            }
             else
                 context.Response.Filter = new ClientResourcesResponseFilter(context.Response.Filter, context, builder);
 

@@ -44,7 +44,12 @@ namespace ClientResourceManager
         }
         private string _key;
 
-        public Level Level { get; set; }
+        public Level Level
+        {
+            get { return _level ?? Level.Loose; }
+            set { _level = value; }
+        }
+        private Level _level;
 
         public int Ordinal { get; set; }
 
@@ -58,10 +63,12 @@ namespace ClientResourceManager
 
         protected ClientResource()
         {
+            Level = Level.Loose;
         }
 
         public ClientResource(string uri) : this(uri, null)
         {
+            Level = Level.Loose;
         }
 
         public ClientResource(string uri, ClientResourceKind? kind)

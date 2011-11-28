@@ -39,7 +39,8 @@ namespace ClientResourceManager.Content
 
         public override void Write(Stream output)
         {
-            foreach (var content in Contents.Where(x => x != null))
+            var contents = Contents.Where(x => x != null).ToArray();
+            foreach (var content in contents)
             {
                 content.Write(output);
             }

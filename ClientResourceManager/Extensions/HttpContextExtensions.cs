@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Web;
+using ClientResourceManager.Util;
 
 namespace ClientResourceManager
 {
@@ -23,6 +24,11 @@ namespace ClientResourceManager
 
             return (request["X-Requested-With"] == "XMLHttpRequest") 
                 || ((request.Headers != null) && (request.Headers["X-Requested-With"] == "XMLHttpRequest"));
+        }
+
+        public static bool IsPartialRenderingRequest(this HttpContextBase context)
+        {
+            return context.IsAjaxRequest() && context.Response.ContentType == KnownMimeTypes.Html;
         }
 
         public static bool HasBeenModifiedSince(this HttpContextBase context, DateTime? lastModifiedDate)

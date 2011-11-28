@@ -27,7 +27,7 @@ namespace ClientResourceManager.Core
 
             var resources = _clientResources.Where(x => keys.Contains(x.Key.ToLower()));
 
-            var unknownKeys = resourceKeys.Except(_clientResources.Select(x => x.Key.ToLower()));
+            var unknownKeys = keys.Except(_clientResources.Select(x => x.Key.ToLower()));
 
             var localFilenames = unknownKeys.Where(x => x.IsLocalUrl());
             var localFileResources = localFilenames.Select(url => new ClientResource(url));

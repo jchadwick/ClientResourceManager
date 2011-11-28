@@ -92,7 +92,7 @@
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Filters\ClientResourcesAjaxResponseFilter.cs" />
+    <Compile Include="Filters\ClientResourcesPartialViewResponseFilter.cs" />
     <Compile Include="Filters\ClientResourcesResponseFilter.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

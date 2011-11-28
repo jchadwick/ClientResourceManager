@@ -108,9 +108,12 @@ namespace ClientResourceManager
 
         protected internal void Render(TextWriter writer, Func<ClientResource, bool> filter = null)
         {
-            filter = filter ?? (x => true);
+            var resources = _resourceManager.Resources;
 
-            var resources = _resourceManager.Resources.Where(filter).ToArray();
+            if (filter != null)
+                resources = resources.Where(filter);
+
+            resources = resources.ToArray();
 
             var stylesheets = resources.Where(x => x.Kind == ClientResourceKind.Stylesheet);
             foreach (var stylesheet in stylesheets)
@@ -140,10 +143,13 @@ namespace ClientResourceManager
             return relativeUrl;
         }
 
-        protected internal virtual void RenderScriptStatements(TextWriter writer)
+        protected internal virtual void RenderScriptStatements(TextWriter writer, bool includeWrapperFunction = true)
         {
             writer.WriteLine("<script type='text/javascript'>//<![CDATA[");
-            writer.WriteLine("window.onload = function() {");
+
+            if (includeWrapperFunction)
+                writer.WriteLine("window.onload = function() {");
+            
             foreach (var statement in _resourceManager.OnDocumentReadyStatements)
             {
                 writer.Write(statement);
@@ -151,7 +157,10 @@ namespace ClientResourceManager
                 if (!statement.EndsWith(";"))
                     writer.Write(";");
             }
-            writer.WriteLine("\r\n};");
+
+            if (includeWrapperFunction)
+                writer.WriteLine("\r\n};");
+
             writer.WriteLine("//]]>");
             writer.WriteLine("</script>");
         }

@@ -4,9 +4,9 @@ using System.Web;
 
 namespace ClientResourceManager.Filters
 {
-    internal class ClientResourcesAjaxResponseFilter : ClientResourcesResponseFilter
+    internal class ClientResourcesPartialViewResponseFilter : ClientResourcesResponseFilter
     {
-        public ClientResourcesAjaxResponseFilter(Stream output, HttpContextBase context, ClientResourceManagerBuilder builder) 
+        public ClientResourcesPartialViewResponseFilter(Stream output, HttpContextBase context, ClientResourceManagerBuilder builder) 
             : base(output, context, builder)
         {
         }
@@ -18,7 +18,7 @@ namespace ClientResourceManager.Filters
             using (var writer = new StringWriter(requestContents))
             {
                 ClientResources.Render(writer, x => x.Level < Level.Global);
-                ClientResources.RenderScriptStatements(writer);
+                ClientResources.RenderScriptStatements(writer, false);
             }
         }
     }

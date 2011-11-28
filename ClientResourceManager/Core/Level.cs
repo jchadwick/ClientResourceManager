@@ -2,7 +2,8 @@ using System;
 
 namespace ClientResourceManager
 {
-    public class Level : IComparable<Level>
+    public class Level : IComparable<Level>, IEquatable<Level>, 
+                         IComparable<int?>, IEquatable<int?>
     {
         public static readonly Level Global = new Level(100, "Global");
         public static readonly Level MidLevel = new Level(75, "MidLevel");
@@ -27,10 +28,12 @@ namespace ClientResourceManager
 
         public int CompareTo(Level other)
         {
-            if(other == null)
-                return Value.CompareTo(0);
+            return (other ?? Loose).Value.CompareTo(Value);
+        }
 
-            return other.Value.CompareTo(Value);
+        public int CompareTo(int? other)
+        {
+            return Value.CompareTo(other.GetValueOrDefault());
         }
 
         public override bool Equals(object obj)
@@ -45,6 +48,11 @@ namespace ClientResourceManager
             return other.Value == Value;
         }
 
+        public bool Equals(int? other)
+        {
+            return Value == other.GetValueOrDefault();
+        }
+
         public override int GetHashCode()
         {
             return Value;
@@ -57,16 +65,39 @@ namespace ClientResourceManager
 
         public static implicit operator int?(Level value)
         {
-            if (value == null)
-                return null;
-
-            return value.Value;
+            return Coalesce(value);
         }
 
-        public static implicit operator Level(int value)
+        public static implicit operator Level(int? value)
         {
-            return new Level(value);
+            return new Level(value.GetValueOrDefault(0));
         }
 
+        public static bool operator ==(Level x, Level y)
+        {
+            return Coalesce(x) == Coalesce(y);
+        }
+
+        public static bool operator !=(Level x, Level y)
+        {
+            return Coalesce(x) != Coalesce(y);
+        }
+
+        public static bool operator <(Level x, Level y)
+        {
+            return Coalesce(x) < Coalesce(y);
+        }
+
+        public static bool operator >(Level x, Level y)
+        {
+            return Coalesce(x) > Coalesce(y);
+        }
+
+        private static int? Coalesce(Level level)
+        {
+            return ReferenceEquals(level, null)
+                       ? (int?)null
+                       : level.Value;
+        }
     }
 }

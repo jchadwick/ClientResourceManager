@@ -1,0 +1,9 @@
+﻿@{
+    Html.ClientResources()
+        .IncludeScript("~/scripts/partial.js")
+        .OnDocumentReady("makeJsonCall('" + Url.Action("Json") + "')");
+}
+
+<div id="partial-view">
+    <div class="loading">Loading data...</div>
+</div>
