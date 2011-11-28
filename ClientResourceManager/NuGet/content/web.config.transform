@@ -1,0 +1,39 @@
+﻿<configuration>
+    <configSections>
+        <section name="clientResourceManager" type="ClientResourceManager.Configuration.Settings"/>
+    </configSections>
+    
+    <system.web>
+        <pages>
+            <namespaces>
+                <add namespace="ClientResourceManager"/>
+            </namespaces>
+        </pages>
+
+        <httpModules>
+            <add name="ClientResources" type="ClientResourceManager.Module"/>
+        </httpModules>
+        
+        <httpHandlers>
+            <add path="ClientResources.axd" verb="GET" type="ClientResourceManager.Handler"/>
+        </httpHandlers>
+        
+    </system.web>
+    
+    <system.webServer>
+        <handlers>
+            <add name="ClientResources" path="ClientResources.axd" verb="GET" type="ClientResourceManager.Handler"/>
+        </handlers>
+        <modules>
+            <add name="ClientResources" type="ClientResourceManager.Module" />
+        </modules>
+    </system.webServer>
+
+    <clientResourceManager
+        handlerMode="HttpHandler"
+        handlerUrl="~/ClientResources.axd"
+        minification="true"
+        showWebResourceName="true"
+    />
+
+</configuration>

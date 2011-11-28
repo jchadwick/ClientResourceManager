@@ -1,0 +1,10 @@
+﻿<configuration>
+    <system.web.webPages.razor>
+        <pages>
+            <namespaces>
+                <add namespace="ClientResourceManager" />
+                <add namespace="ClientResourceManager.Mvc" />
+            </namespaces>
+        </pages>
+    </system.web.webPages.razor>
+</configuration>
